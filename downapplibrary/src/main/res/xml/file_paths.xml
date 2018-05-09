@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <paths>
+        <external-path
+            name="download"
+            path="" />
+    </paths>
+
+    <!--<files-path/>代表的根目录： [Context.getFilesDir()](https://developer.android.com/reference/android/content/Context.html?hl=zh-tw#getFilesDir())-->
+
+    <!--<external-path/>代表的根目录: [Environment.getExternalStorageDirectory()](https://developer.android.com/reference/android/os/Environment.html?hl=zh-tw#getExternalStorageDirectory())-->
+
+    <!--<cache-path/>代表的根目录: [getCacheDir()](https://developer.android.com/reference/android/content/Context.html?hl=zh-tw#getCacheDir())-->
+    <!-- external-path:sd ；path:你的应用保存文件的根目录；name随便定义-->
+    <!-- root-path 手机存储根目录 -->
+    <!--<root-path
+        name="external_storage_root"
+        path="." />-->
+
+</resources>

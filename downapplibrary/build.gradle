@@ -48,4 +48,5 @@ dependencies {
     implementation 'com.android.support:cardview-v7:24.1.1'
 
     implementation 'com.github.ManTouBaby:MineDateDialog:1.0.3'
+    implementation 'com.github.ManTouBaby:MineUtils:1.0.5'
 }

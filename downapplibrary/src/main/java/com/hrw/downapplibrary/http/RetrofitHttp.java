@@ -1,10 +1,12 @@
 package com.hrw.downapplibrary.http;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.hrw.downapplibrary.callback.DownloadCallBack;
 import com.hrw.downapplibrary.util.Constant;
-import com.hrw.downapplibrary.util.SPDownloadUtil;
+import com.hrw.utilslibrary.file.MtFileUtil;
+import com.hrw.utilslibrary.sharepreferences.MtSPHelper;
 
 import java.io.File;
 import java.io.InputStream;
@@ -18,7 +20,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 
 
 public class RetrofitHttp {
@@ -58,9 +59,9 @@ public class RetrofitHttp {
         apiService = retrofit.create(ApiService.class);
     }
 
-    public void downloadFile(final long range, final String url, final String fileName, final DownloadCallBack downloadCallback) {
+    public void downloadFile(final Context context, final long range, final String url, final String fileName, final DownloadCallBack downloadCallback) {
         //断点续传时请求的总长度
-        File file = new File(Constant.APP_ROOT_PATH + Constant.DOWNLOAD_DIR, fileName);
+        File file = new File(MtFileUtil.getAppPath(context) + Constant.DOWNLOAD_DIR, fileName);
         String totalLength = "-";
         if (file.exists()) {
             totalLength += file.length();
@@ -84,7 +85,7 @@ public class RetrofitHttp {
                             int len = 0;
                             responseLength = responseBody.contentLength();
                             inputStream = responseBody.byteStream();
-                            String filePath = Constant.APP_ROOT_PATH + Constant.DOWNLOAD_DIR;
+                            String filePath = MtFileUtil.getAppPath(context) + Constant.DOWNLOAD_DIR;
                             File file = new File(filePath, fileName);
                             File dir = new File(filePath);
                             if (!dir.exists()) {
@@ -115,7 +116,7 @@ public class RetrofitHttp {
                             e.printStackTrace();
                         } finally {
                             try {
-                                SPDownloadUtil.getInstance().save(url, total);
+                                MtSPHelper.putLong(Constant.SPNAME, url, total);
                                 if (randomAccessFile != null) {
                                     randomAccessFile.close();
                                 }

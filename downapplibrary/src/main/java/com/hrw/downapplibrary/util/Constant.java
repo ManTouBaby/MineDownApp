@@ -1,11 +1,7 @@
 package com.hrw.downapplibrary.util;
 
-import android.os.Environment;
+public interface Constant {
+    String DOWNLOAD_DIR = "/downlaod/";//下载地址文件夹
 
-import com.damon.download.MainApplication;
-
-
-public class Constant {
-    public final static String APP_ROOT_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + MainApplication.getInstance().getPackageName();
-    public final static String DOWNLOAD_DIR = "/downlaod/";
+    String SPNAME = "downTag";
 }

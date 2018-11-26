@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="8dp">
+
+    <ImageView
+        android:id="@+id/down_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/down_notify_icon" />
+
+    <TextView
+        android:id="@+id/down_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/down_icon"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/down_icon"
+        android:text="标题名"
+        android:textSize="15sp" />
+
+
+    <ProgressBar
+        android:id="@+id/down_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/down_icon"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/down_icon" />
+
+    <TextView
+        android:id="@+id/tv_down_progress_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/down_title"
+        android:text="100%" />
+</RelativeLayout>

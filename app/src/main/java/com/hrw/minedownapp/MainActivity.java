@@ -16,7 +16,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnDownProgressListener {
     //    String url = "http://sqdd.myapp.com/myapp/qqteam/tim/down/tim.apk";
-    String url = "http://cdn12.down.apk.gfan.net.cn/Pfiles/2017/03/24/149942_82841bf6-341e-4e03-b90b-547f908871c1.apk";
+    String url = "http://192.168.10.33:51004/appstore/thqw20181122.apk";
+//    String url = "http://cdn12.down.apk.gfan.net.cn/Pfiles/2017/03/24/149942_82841bf6-341e-4e03-b90b-547f908871c1.apk";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements OnDownProgressLis
             case R.id.bt_click_down_app:
                 MtDownAppHelper.init()
                         .setNotifyIcon(R.mipmap.ic_launcher)
-                        .startDownApp(this, 1, url, 1, "test13", "App下载更新中")
+                        .startDownApp(this, 1, url, 1, "test14", "App下载更新中")
                         .setOnProgressListener(this);
 //                MtDownAppHelper.init().startDownApp(this, 2, url, 17, "test17");
 //                MtDownAppHelper.init().startDownApp(this, 3, url, 18, "test18");

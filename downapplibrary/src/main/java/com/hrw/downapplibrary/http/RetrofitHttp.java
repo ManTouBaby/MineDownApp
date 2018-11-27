@@ -116,7 +116,7 @@ public class RetrofitHttp {
                             e.printStackTrace();
                         } finally {
                             try {
-                                MtSPHelper.putLong(Constant.SPNAME, url, total);
+                                MtSPHelper.putLong(Constant.DOWN_APP_SP_TAG, url, total);
                                 if (randomAccessFile != null) {
                                     randomAccessFile.close();
                                 }

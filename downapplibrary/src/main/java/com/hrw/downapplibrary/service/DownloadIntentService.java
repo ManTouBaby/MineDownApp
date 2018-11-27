@@ -15,6 +15,7 @@ import com.hrw.downapplibrary.R;
 import com.hrw.downapplibrary.callback.DownloadCallBack;
 import com.hrw.downapplibrary.http.RetrofitHttp;
 import com.hrw.downapplibrary.util.Constant;
+import com.hrw.downapplibrary.util.DownStatus;
 import com.hrw.utilslibrary.file.MtFileUtil;
 import com.hrw.utilslibrary.sharepreferences.MtSPHelper;
 
@@ -29,6 +30,7 @@ public class DownloadIntentService extends IntentService {
     private String mDownloadNotifyTitle;
     private int mDownloadTag;
     private Notification mNotification;
+    private int notify_icon = -1;
 
     public DownloadIntentService() {
         super("InitializeService");
@@ -36,11 +38,13 @@ public class DownloadIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        String downloadUrl = intent.getExtras().getString("download_url");
-        final int downloadId = intent.getExtras().getInt("download_id");
-        mDownloadFileName = intent.getExtras().getString("download_file");
-        mDownloadNotifyTitle = intent.getExtras().getString("download_notify_title");
-        mDownloadTag = intent.getExtras().getInt("download_tag");
+        String downloadUrl = intent.getExtras().getString(Constant.DOWN_URL);
+        final int downloadId = intent.getExtras().getInt(Constant.DOWN_ID);
+        mDownloadFileName = intent.getExtras().getString(Constant.DOWN_FILE_NAME);
+        mDownloadNotifyTitle = intent.getExtras().getString(Constant.DOWN_NOTIFY_TITLE);
+        mDownloadTag = intent.getExtras().getInt(Constant.DOWN_TAG);
+        notify_icon = intent.getExtras().getInt(Constant.DOWN_NOTIFY_ICON, -1);
+
 
         Log.d(TAG, "download_url --" + downloadUrl);
         Log.d(TAG, "download_file --" + mDownloadFileName);
@@ -49,7 +53,7 @@ public class DownloadIntentService extends IntentService {
         long range = 0;
         int progress = 0;
         if (file.exists()) {
-            range = MtSPHelper.getLong(Constant.SPNAME, downloadUrl);
+            range = MtSPHelper.getLong(Constant.DOWN_APP_SP_TAG, downloadUrl);
             progress = (int) (range * 100 / file.length());
             if (range == file.length()) {
                 installApp(file);
@@ -62,6 +66,7 @@ public class DownloadIntentService extends IntentService {
         final RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.down_notify_layout);
         remoteViews.setProgressBar(R.id.down_progress, 100, progress, false);
         remoteViews.setTextViewText(R.id.down_title, "已下载" + progress + "%");
+        remoteViews.setImageViewResource(R.id.down_icon, notify_icon != -1 ? notify_icon : R.mipmap.down_notify_icon);
 
         mNotification = new NotificationCompat.Builder(this)
                 .setContent(remoteViews)
@@ -77,32 +82,38 @@ public class DownloadIntentService extends IntentService {
             public void onProgress(int progress) {
                 remoteViews.setProgressBar(R.id.down_progress, 100, progress, false);
                 remoteViews.setTextViewText(R.id.tv_down_progress_show, "已下载" + progress + "%");
-                remoteViews.setTextViewText(R.id.down_title, mDownloadNotifyTitle == null ? "正在下载" : mDownloadFileName);
+                remoteViews.setTextViewText(R.id.down_title, mDownloadNotifyTitle == null ? "正在下载" : mDownloadNotifyTitle);
                 mNotifyManager.notify(downloadId, mNotification);
-                sendBroadCast(progress, false);
+                if (progress == 100) {
+                    sendBroadCast(100, DownStatus.DOWN_COMPLETE, "下载成功");
+                } else {
+                    sendBroadCast(progress, DownStatus.DOWN_ING, "下载中");
+                }
             }
 
             @Override
             public void onCompleted() {
                 Log.d(TAG, "下载完成");
                 mNotifyManager.cancel(downloadId);
-                sendBroadCast(100, true);
                 installApp(file);
             }
 
             @Override
             public void onError(String msg) {
                 mNotifyManager.cancel(downloadId);
-                Log.d(TAG, "下载发生错误--" + msg);
+                sendBroadCast(-1, DownStatus.DOWN_FAILS, msg);
+                Log.d(TAG, "下载发生错误:" + msg);
             }
         });
     }
 
-    private void sendBroadCast(int progress, boolean downComplete) {
+    private void sendBroadCast(int progress, DownStatus downStatus, String downMSG) {
         Intent intent = new Intent();
-        intent.putExtra("down_tag", mDownloadTag);
-        intent.putExtra("down_progress", progress);
-        intent.putExtra("down_complete", downComplete);
+
+        intent.putExtra(Constant.DOWN_TAG, mDownloadTag);
+        intent.putExtra(Constant.DOWN_PROGRESS, progress);
+        intent.putExtra(Constant.DOWN_STATUS, downStatus);
+        intent.putExtra(Constant.DOWN_MSG, downMSG);
         intent.setAction("com.hrw.DownProgressBroadcast");
         sendBroadcast(intent);
     }

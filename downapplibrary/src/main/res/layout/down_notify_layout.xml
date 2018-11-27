@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/down_icon"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/down_icon"
         android:text="标题名"
         android:textSize="15sp" />
@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/down_icon"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/down_icon" />
 
     <TextView

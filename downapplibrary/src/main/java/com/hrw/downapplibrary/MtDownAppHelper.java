@@ -49,7 +49,7 @@ public class MtDownAppHelper {
     }
 
     public MtDownAppHelper startDownApp(Context context, int downTag, String downUrl, int downId) {
-        startDownApp(context, downTag, downUrl, downId, downUrl.substring(downUrl.lastIndexOf("/"), downUrl.length() - 1));
+        startDownApp(context, downTag, downUrl, downId, downUrl.substring(downUrl.lastIndexOf("/"), downUrl.length()));
         return mDownAppHelper;
     }
 

@@ -6,8 +6,10 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -63,7 +65,7 @@ public class DownloadIntentService extends IntentService {
 
         Log.d(TAG, "range = " + range);
 
-        final RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.down_notify_layout);
+        final RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notify_download);
         remoteViews.setProgressBar(R.id.down_progress, 100, progress, false);
         remoteViews.setTextViewText(R.id.down_title, "已下载" + progress + "%");
         remoteViews.setImageViewResource(R.id.down_icon, notify_icon != -1 ? notify_icon : R.mipmap.down_notify_icon);
@@ -121,8 +123,16 @@ public class DownloadIntentService extends IntentService {
     private void installApp(File file) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
-        startActivity(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Uri contentUri = FileProvider.getUriForFile(this, "com.hrw.downapplibrary.fileProvider", file);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+            startActivity(intent);
+        } else {
+            Uri uri = Uri.fromFile(file);
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+            startActivity(intent);
+        }
     }
 
 }

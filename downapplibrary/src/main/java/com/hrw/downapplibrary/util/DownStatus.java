@@ -9,7 +9,8 @@ package com.hrw.downapplibrary.util;
 public enum DownStatus {
     DOWN_COMPLETE("下载完成"),
     DOWN_FAILS("下载失败"),
-    DOWN_ING("下载中");
+    DOWN_ING("下载中"),
+    DOWN_DONE("已下载");
 
     String mValue;
 

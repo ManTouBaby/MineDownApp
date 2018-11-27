@@ -55,6 +55,7 @@ public class DownloadIntentService extends IntentService {
         long range = 0;
         int progress = 0;
         if (file.exists()) {
+            sendBroadCast(100, DownStatus.DOWN_DONE, "已下载");
             range = MtSPHelper.getLong(Constant.DOWN_APP_SP_TAG, downloadUrl);
             progress = (int) (range * 100 / file.length());
             if (range == file.length()) {

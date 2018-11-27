@@ -6,10 +6,8 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -124,16 +122,19 @@ public class DownloadIntentService extends IntentService {
     private void installApp(File file) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Uri contentUri = FileProvider.getUriForFile(this, "com.hrw.downapplibrary.fileProvider", file);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
-            startActivity(intent);
-        } else {
-            Uri uri = Uri.fromFile(file);
-            intent.setDataAndType(uri, "application/vnd.android.package-archive");
-            startActivity(intent);
-        }
+        Uri uri = Uri.fromFile(file);
+        intent.setDataAndType(uri, "application/vnd.android.package-archive");
+        startActivity(intent);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            Uri contentUri = FileProvider.getUriForFile(this, "com.hrw.downapplibrary.fileProvider", file);
+//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+//            startActivity(intent);
+//        } else {
+//            Uri uri = Uri.fromFile(file);
+//            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+//            startActivity(intent);
+//        }
     }
 
 }

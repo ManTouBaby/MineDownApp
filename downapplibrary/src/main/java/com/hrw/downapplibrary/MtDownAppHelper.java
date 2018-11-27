@@ -115,12 +115,13 @@ public class MtDownAppHelper {
             int progress = intent.getIntExtra(Constant.DOWN_PROGRESS, 0);
             String msg = intent.getStringExtra(Constant.DOWN_MSG);
             DownStatus downStatus = (DownStatus) intent.getSerializableExtra(Constant.DOWN_STATUS);
+            if (downStatus == DownStatus.DOWN_COMPLETE||downStatus == DownStatus.DOWN_DONE) {
+                context.unregisterReceiver(progressBroadcast);
+            }
             if (mProgressListener != null) {
                 mProgressListener.onProgress(progress, tag, downStatus, msg);
             }
-            if (downStatus == DownStatus.DOWN_COMPLETE) {
-                context.unregisterReceiver(progressBroadcast);
-            }
+
         }
     }
 }

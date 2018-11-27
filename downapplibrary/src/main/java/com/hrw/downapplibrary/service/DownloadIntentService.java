@@ -17,7 +17,6 @@ import com.hrw.downapplibrary.http.RetrofitHttp;
 import com.hrw.downapplibrary.util.Constant;
 import com.hrw.downapplibrary.util.DownStatus;
 import com.hrw.utilslibrary.file.MtFileUtil;
-import com.hrw.utilslibrary.sharepreferences.MtSPHelper;
 
 import java.io.File;
 
@@ -54,12 +53,13 @@ public class DownloadIntentService extends IntentService {
         int progress = 0;
         if (file.exists()) {
             sendBroadCast(100, DownStatus.DOWN_DONE, "已下载");
-            range = MtSPHelper.getLong(Constant.DOWN_APP_SP_TAG, downloadUrl);
-            progress = (int) (range * 100 / file.length());
-            if (range == file.length()) {
-                installApp(file);
-                return;
-            }
+            installApp(file);
+            return;
+//            range = MtSPHelper.getLong(Constant.DOWN_APP_SP_TAG, downloadUrl);
+//            progress = (int) (range * 100 / file.length());
+//            if (range == file.length()) {
+//
+//            }
         }
 
         Log.d(TAG, "range = " + range);

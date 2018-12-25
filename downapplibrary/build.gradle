@@ -3,8 +3,6 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 24
 
-
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 22
@@ -45,4 +43,5 @@ dependencies {
 
     implementation 'com.github.ManTouBaby:MineDateDialog:1.0.3'
     implementation 'com.github.ManTouBaby:MineUtils:1.0.5'
+    implementation 'org.greenrobot:eventbus:3.1.1'
 }

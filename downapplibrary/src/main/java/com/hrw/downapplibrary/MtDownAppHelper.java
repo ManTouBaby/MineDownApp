@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
-import android.widget.Toast;
 
 import com.hrw.downapplibrary.callback.OnDownProgressListener;
 import com.hrw.downapplibrary.service.DownloadIntentService;
@@ -27,6 +26,7 @@ public class MtDownAppHelper {
     static OnDownProgressListener mProgressListener;
     private DownProgressBroadcast progressBroadcast;
     private int notifyIcon;
+
 
     private MtDownAppHelper() {
     }
@@ -60,10 +60,10 @@ public class MtDownAppHelper {
 
     public MtDownAppHelper startDownApp(Context context, int downTag, String downUrl, int downId, String saveFileName, String notifyTitle) {
         MtSPHelper.init(context, Constant.DOWN_APP_SP_TAG);
-        if (isServiceRunning(context, DownloadIntentService.class.getName())) {
-            Toast.makeText(context, "正在下载", Toast.LENGTH_SHORT).show();
-            return mDownAppHelper;
-        }
+//        if (isServiceRunning(context, DownloadIntentService.class.getName())) {
+//            Toast.makeText(context, "正在下载", Toast.LENGTH_SHORT).show();
+//            return mDownAppHelper;
+//        }
         Intent intent = new Intent(context, DownloadIntentService.class);
         Bundle bundle = new Bundle();
         bundle.putString(Constant.DOWN_URL, downUrl);
@@ -115,7 +115,7 @@ public class MtDownAppHelper {
             int progress = intent.getIntExtra(Constant.DOWN_PROGRESS, 0);
             String msg = intent.getStringExtra(Constant.DOWN_MSG);
             DownStatus downStatus = (DownStatus) intent.getSerializableExtra(Constant.DOWN_STATUS);
-            if (downStatus == DownStatus.DOWN_COMPLETE||downStatus == DownStatus.DOWN_DONE) {
+            if (downStatus == DownStatus.DOWN_COMPLETE || downStatus == DownStatus.DOWN_DONE) {
                 context.unregisterReceiver(progressBroadcast);
             }
             if (mProgressListener != null) {

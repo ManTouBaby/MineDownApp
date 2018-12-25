@@ -17,6 +17,7 @@ import com.hrw.downapplibrary.http.RetrofitHttp;
 import com.hrw.downapplibrary.util.Constant;
 import com.hrw.downapplibrary.util.DownStatus;
 import com.hrw.utilslibrary.file.MtFileUtil;
+import com.hrw.utilslibrary.sharepreferences.MtSPHelper;
 
 import java.io.File;
 
@@ -52,14 +53,12 @@ public class DownloadIntentService extends IntentService {
         long range = 0;
         int progress = 0;
         if (file.exists()) {
-            sendBroadCast(100, DownStatus.DOWN_DONE, "已下载");
-            installApp(file);
-            return;
-//            range = MtSPHelper.getLong(Constant.DOWN_APP_SP_TAG, downloadUrl);
-//            progress = (int) (range * 100 / file.length());
-//            if (range == file.length()) {
-//
-//            }
+            range = MtSPHelper.getLong(Constant.DOWN_APP_SP_TAG, downloadUrl);//如果文件存在，则获取当前文件已下载大小
+            progress = (int) (range * 100 / file.length());//如果文件已下载大小跟文件大小相同，说明文件已下载完成
+            if (progress == 100) {
+                sendBroadCast(100, DownStatus.DOWN_DONE, "已下载");
+                installApp(file);
+            }
         }
 
         Log.d(TAG, "range = " + range);
@@ -78,6 +77,7 @@ public class DownloadIntentService extends IntentService {
 
         mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyManager.notify(downloadId, mNotification);
+
         RetrofitHttp.getInstance().downloadFile(this, range, downloadUrl, mDownloadFileName, new DownloadCallBack() {
             @Override
             public void onProgress(int progress) {
@@ -125,16 +125,6 @@ public class DownloadIntentService extends IntentService {
         Uri uri = Uri.fromFile(file);
         intent.setDataAndType(uri, "application/vnd.android.package-archive");
         startActivity(intent);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            Uri contentUri = FileProvider.getUriForFile(this, "com.hrw.downapplibrary.fileProvider", file);
-//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//            intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
-//            startActivity(intent);
-//        } else {
-//            Uri uri = Uri.fromFile(file);
-//            intent.setDataAndType(uri, "application/vnd.android.package-archive");
-//            startActivity(intent);
-//        }
     }
 
 }

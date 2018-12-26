@@ -7,10 +7,11 @@ package com.hrw.downapplibrary.util;
  * @desc:
  */
 public enum DownType {
-    DOWN_APP("下载APP", "/downLoad/App/"),
-    DOWN_MUSIC("下载音乐", "/downLoad/Music"),
-    DOWN_MOVIE("下载电影", "/downLoad/Movie"),
-    DOWN_FILE("下载文件", "/downLoad/Files");
+    DOWN_APP("下载APP", "/downLoad/app/"),
+    DOWN_MUSIC("下载音乐", "/downLoad/music"),
+    DOWN_MOVIE("下载电影", "/downLoad/movie"),
+    DOWN_FILE("下载文件", "/downLoad/files"),
+    DOWN_IMAGE("下载图片", "/downLoad/images");
 
     private String typeName;
     private String path;

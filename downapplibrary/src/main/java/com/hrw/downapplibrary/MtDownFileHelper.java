@@ -32,13 +32,20 @@ public class MtDownFileHelper {
     private Context mContext;
 
     private MtDownFileHelper(Context context) {
-        Intent intent = new Intent(context, DownLoadService.class);
-        boolean success = context.getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        EventBus.getDefault().register(this);
         mContext = context;
-//        System.out.println("绑定是否成功:" + success);
     }
 
+
+    /**
+     * 初始化
+     *
+     * @return
+     */
+    public void onCreate() {
+        Intent intent = new Intent(mContext, DownLoadService.class);
+        mContext.getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        EventBus.getDefault().register(this);
+    }
 
     /**
      * 初始化
@@ -122,17 +129,26 @@ public class MtDownFileHelper {
         }
     }
 
+    public void stopDownLoad(String downUrl) {
+
+    }
+
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void updateProgress(ProgressBO progressBO) {
+        System.out.println(progressBO.toString());
         if (mDownFileListener != null) {
             mDownFileListener.onProgress(progressBO.url, progressBO.downStatus, progressBO.progress);
         }
     }
 
+
+
+
     /**
      * 销毁连接
      */
     public void onDestroy() {
+        if (mService != null) mService.onClearNotify();
         EventBus.getDefault().unregister(this);
         mContext.getApplicationContext().unbindService(mConnection);
     }

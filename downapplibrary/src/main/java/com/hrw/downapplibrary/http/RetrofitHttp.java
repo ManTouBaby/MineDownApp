@@ -62,12 +62,12 @@ public class RetrofitHttp {
     public void downloadFile(final Context context, final long range, final String url, final String fileName, final DownloadCallBack downloadCallback) {
         //断点续传时请求的总长度
         File file = new File(MtFileUtil.getAppPath(context) + Constant.DOWNLOAD_DIR, fileName);
-        String totalLength = "-";
+        String currentSizeLength = "-";
         if (file.exists()) {
-            totalLength += file.length();
+            currentSizeLength += file.length();
         }
         System.out.println("downloadFile " + Thread.currentThread().getName());
-        apiService.executeDownload("bytes=" + Long.toString(range) + totalLength, url)
+        apiService.executeDownload("bytes=" + Long.toString(range) + currentSizeLength, url)
                 .subscribe(new Observer<ResponseBody>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -79,7 +79,8 @@ public class RetrofitHttp {
                         System.out.println("onNext " + Thread.currentThread().getName());
                         RandomAccessFile randomAccessFile = null;
                         InputStream inputStream = null;
-                        long total = range;
+                        long currentSize = range;
+                        long totalSize = 0;
                         long responseLength = 0;
                         try {
                             byte[] buf = new byte[2048];
@@ -95,22 +96,24 @@ public class RetrofitHttp {
                             randomAccessFile = new RandomAccessFile(file, "rwd");
                             if (range == 0) {
                                 randomAccessFile.setLength(responseLength);
+                                totalSize = responseLength;
+                            } else {
+                                totalSize = file.length();
                             }
                             randomAccessFile.seek(range);
 
                             int progress = 0;
-                            int lastProgress = 0;
+                            int lastProgress;
 
                             while ((len = inputStream.read(buf)) != -1) {
                                 randomAccessFile.write(buf, 0, len);
-                                total += len;
+                                currentSize += len;
                                 lastProgress = progress;
-                                progress = (int) (total * 100 / randomAccessFile.length());
+                                progress = (int) (currentSize * 100 / randomAccessFile.length());
                                 if (progress > 0 && progress != lastProgress) {
-                                    downloadCallback.onProgress(progress);
+                                    downloadCallback.onProgress(progress, currentSize, totalSize);
                                 }
-//                                System.out.println("当前大小:" + total);
-                                MtSPHelper.putLong(Constant.DOWN_APP_SP_TAG, url, total);
+                                MtSPHelper.putLong(Constant.DOWN_APP_SP_TAG, url, currentSize);
                             }
                             downloadCallback.onCompleted();
 
@@ -120,8 +123,8 @@ public class RetrofitHttp {
                             e.printStackTrace();
                         } finally {
                             try {
-                                MtSPHelper.putLong(Constant.DOWN_APP_SP_TAG, url, total);
-                                System.out.println("结束后大小:" + total);
+                                MtSPHelper.putLong(Constant.DOWN_APP_SP_TAG, url, currentSize);
+                                System.out.println("结束后大小:" + currentSize);
                                 if (randomAccessFile != null) {
                                     randomAccessFile.close();
                                 }

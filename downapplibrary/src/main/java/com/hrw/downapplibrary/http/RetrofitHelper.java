@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
@@ -58,21 +57,12 @@ public class RetrofitHelper {
         //断点续传时请求的总长度
         File file = new File(MtFileUtil.getAppPath(context) + downType.getPath(), saveFileName);
         ApiService mApiService = getApi();
-        String totalLength = "-";
+        String currentSizeLength = "-";
         if (file.exists()) {
-            totalLength += file.length();
+            currentSizeLength += file.length();
         }
-        System.out.println("addDownLoad " + Thread.currentThread().getName());
-        mApiService.executeDownload("bytes=" + range + totalLength, downUrl)
-                .map(new Function<ResponseBody, ResponseBody>() {
-                    @Override
-                    public ResponseBody apply(ResponseBody responseBody) throws Exception {
-                        System.out.println("Function " + Thread.currentThread().getName());
-                        return responseBody;
-                    }
-                })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
+//        System.out.println("addDownLoad " + Thread.currentThread().getName());
+        mApiService.executeDownload("bytes=" + range + currentSizeLength, downUrl)
                 .subscribe(new Observer<ResponseBody>() {
                     Disposable disposable;
 
@@ -83,10 +73,11 @@ public class RetrofitHelper {
 
                     @Override
                     public void onNext(ResponseBody responseBody) {
-                        System.out.println("onNext " + Thread.currentThread().getName());
+//                        System.out.println("onNext " + Thread.currentThread().getName());
                         RandomAccessFile randomAccessFile = null;
                         InputStream inputStream = null;
-                        long total = range;
+                        long currentSize = range;
+                        long totalSize = 0;
                         long responseLength;
                         try {
                             byte[] buf = new byte[2048];
@@ -102,6 +93,9 @@ public class RetrofitHelper {
                             randomAccessFile = new RandomAccessFile(file, "rwd");
                             if (range == 0) {
                                 randomAccessFile.setLength(responseLength);
+                                totalSize = responseLength;
+                            } else {
+                                totalSize = file.length();
                             }
                             randomAccessFile.seek(range);
 
@@ -110,14 +104,13 @@ public class RetrofitHelper {
 
                             while ((len = inputStream.read(buf)) != -1) {
                                 randomAccessFile.write(buf, 0, len);
-                                total += len;
+                                currentSize += len;
                                 lastProgress = progress;
-                                progress = (int) (total * 100 / randomAccessFile.length());
+                                progress = (int) (currentSize * 100 / randomAccessFile.length());
                                 if (progress > 0 && progress != lastProgress) {
-                                    downloadCallback.onProgress(progress);
+                                    downloadCallback.onProgress(progress, currentSize, totalSize);
                                 }
-                                System.out.println("当前大小:" + total);
-                                MtSPHelper.putLong(Constant.DOWN_APP_SP_TAG, downUrl, total);
+                                MtSPHelper.putLong(Constant.DOWN_APP_SP_TAG, downUrl, currentSize);
                             }
                             downloadCallback.onCompleted();
 
@@ -127,8 +120,7 @@ public class RetrofitHelper {
                             e.printStackTrace();
                         } finally {
                             try {
-                                MtSPHelper.putLong(Constant.DOWN_APP_SP_TAG, downUrl, total);
-//                                System.out.println("结束后大小:" + total);
+                                MtSPHelper.putLong(Constant.DOWN_APP_SP_TAG, downUrl, currentSize);
                                 if (randomAccessFile != null) {
                                     randomAccessFile.close();
                                 }

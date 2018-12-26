@@ -80,7 +80,7 @@ public class DownloadIntentService extends IntentService {
 
         RetrofitHttp.getInstance().downloadFile(this, range, downloadUrl, mDownloadFileName, new DownloadCallBack() {
             @Override
-            public void onProgress(int progress) {
+            public void onProgress(int progress, long currentSize, long totalSize) {
                 remoteViews.setProgressBar(R.id.down_progress, 100, progress, false);
                 remoteViews.setTextViewText(R.id.tv_down_progress_show, "已下载" + progress + "%");
                 remoteViews.setTextViewText(R.id.down_title, mDownloadNotifyTitle == null ? "正在下载" : mDownloadNotifyTitle);
